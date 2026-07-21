@@ -83,3 +83,8 @@
 #define HAS_32768HZ 1
 
 #define USE_SH1106
+
+// QMI8658 6-DoF IMU - SPI-connected, shares HSPI bus with SD card (pins from pins_arduino.h)
+#define HAS_QMI8658
+#define QMI8658_SPI_CS IMU_CS
+#define QMI8658_INT_PIN IMU_INT

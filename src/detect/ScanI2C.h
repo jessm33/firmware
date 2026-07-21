@@ -109,6 +109,7 @@ class ScanI2C
         NO_I2C,
         WIRE,
         WIRE1,
+        SPI_BUS, // for sensors wired via SPI rather than I2C (e.g. QMI8658 on T-Beam Supreme)
     } I2CPort;
 
     typedef struct DeviceAddress {

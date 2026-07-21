@@ -44,8 +44,8 @@ ScanI2C::FoundDevice ScanI2C::firstAccelerometer() const
 
 ScanI2C::FoundDevice ScanI2C::firstMagnetometer() const
 {
-    ScanI2C::DeviceType types[] = {MMC5983MA, IIS2MDCTR};
-    return firstOfOrNONE(2, types);
+    ScanI2C::DeviceType types[] = {MMC5983MA, IIS2MDCTR, QMC6310U, QMC6310N};
+    return firstOfOrNONE(4, types);
 }
 
 ScanI2C::FoundDevice ScanI2C::firstAQI() const

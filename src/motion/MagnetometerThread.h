@@ -9,6 +9,9 @@
 #include "../concurrency/OSThread.h"
 #include "MMC5983MASensor.h"
 #include "MotionSensor.h"
+#if __has_include(<SensorQMC6310.hpp>)
+#include "QMC6310Sensor.h"
+#endif
 
 extern ScanI2C::DeviceAddress magnetometer_found;
 
@@ -70,6 +73,12 @@ class MagnetometerThread : public concurrency::OSThread
         case ScanI2C::DeviceType::MMC5983MA:
             sensor = new MMC5983MASensor(device);
             break;
+#if __has_include(<SensorQMC6310.hpp>)
+        case ScanI2C::DeviceType::QMC6310U:
+        case ScanI2C::DeviceType::QMC6310N:
+            sensor = new QMC6310Sensor(device);
+            break;
+#endif
         default:
             disable();
             return;

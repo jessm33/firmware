@@ -27,6 +27,9 @@
 #ifdef HAS_STK8XXX
 #include "STK8XXXSensor.h"
 #endif
+#ifdef HAS_QMI8658
+#include "QMI8658Sensor.h"
+#endif
 
 extern ScanI2C::DeviceAddress accelerometer_found;
 
@@ -84,7 +87,11 @@ class AccelerometerThread : public concurrency::OSThread
         if (isInitialised)
             return;
 
-        if (device.address.port == ScanI2C::I2CPort::NO_I2C || device.address.address == 0 || device.type == ScanI2C::NONE) {
+        // SPI-connected sensors (e.g. QMI8658) carry SPI_BUS as their port and have no I2C address.
+        // Only apply the address check for I2C-attached sensors.
+        const bool isSpi = (device.address.port == ScanI2C::I2CPort::SPI_BUS);
+        if (device.type == ScanI2C::NONE ||
+            (!isSpi && (device.address.port == ScanI2C::I2CPort::NO_I2C || device.address.address == 0))) {
             LOG_DEBUG("AccelerometerThread Disable due to no sensors found");
             disable();
             return;
@@ -142,6 +149,11 @@ class AccelerometerThread : public concurrency::OSThread
 #ifdef HAS_QMA6100P
         case ScanI2C::DeviceType::QMA6100P:
             sensor = new QMA6100PSensor(device);
+            break;
+#endif
+#ifdef HAS_QMI8658
+        case ScanI2C::DeviceType::QMI8658:
+            sensor = new QMI8658Sensor(device);
             break;
 #endif
         default:

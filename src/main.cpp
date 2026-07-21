@@ -770,6 +770,14 @@ void setup()
     auto acc_info = i2cScanner->firstAccelerometer();
     accelerometer_found = acc_info.type != ScanI2C::DeviceType::NONE ? acc_info.address : accelerometer_found;
     LOG_DEBUG("acc_info = %i", acc_info.type);
+#ifdef HAS_QMI8658
+    // QMI8658 is SPI-connected; the I2C scanner will never find it.
+    // Synthesise a FoundDevice so AccelerometerThread creates a QMI8658Sensor.
+    if (acc_info.type == ScanI2C::DeviceType::NONE) {
+        acc_info = ScanI2C::FoundDevice{ScanI2C::DeviceType::QMI8658, ScanI2C::DeviceAddress(ScanI2C::I2CPort::SPI_BUS, 0)};
+        accelerometer_found = acc_info.address;
+    }
+#endif
 #endif
 #if !defined(ARCH_STM32WL) && !MESHTASTIC_EXCLUDE_MAGNETOMETER
     auto mag_info = i2cScanner->firstMagnetometer();
