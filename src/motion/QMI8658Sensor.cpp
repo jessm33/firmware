@@ -16,6 +16,10 @@ QMI8658Sensor::QMI8658Sensor(ScanI2C::FoundDevice foundDevice) : MotionSensor::M
 bool QMI8658Sensor::init()
 {
 #if defined(HAS_SDCARD) && defined(SDCARD_USE_SPI1)
+    // Hold SD card CS high before any HSPI transaction so a missing or
+    // unpowered card cannot float the bus and corrupt the IMU transfer.
+    pinMode(SPI_CS, OUTPUT);
+    digitalWrite(SPI_CS, HIGH);
     LOG_DEBUG("QMI8658 begin on SPI HSPI cs=%d", QMI8658_SPI_CS);
     if (!imu.begin(SPI_HSPI, QMI8658_SPI_CS)) {
         LOG_DEBUG("QMI8658 init error");
