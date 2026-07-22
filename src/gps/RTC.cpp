@@ -137,19 +137,24 @@ RTCSetResult readFromRTC()
 #elif defined(PCF8563_RTC) || defined(PCF85063_RTC)
 #if defined(PCF8563_RTC)
     if (rtc_found.address == PCF8563_RTC) {
-        SensorPCF8563 rtc;
+        static SensorPCF8563 rtc;
+        static bool rtcInitialized = false;
 #elif defined(PCF85063_RTC)
     if (rtc_found.address == PCF85063_RTC) {
-        SensorPCF85063 rtc;
+        static SensorPCF85063 rtc;
+        static bool rtcInitialized = false;
 
 #endif
         uint32_t now = millis();
 
+        if (!rtcInitialized) {
 #if WIRE_INTERFACES_COUNT == 2
-        rtc.begin(rtc_found.port == ScanI2C::I2CPort::WIRE1 ? Wire1 : Wire);
+            rtc.begin(rtc_found.port == ScanI2C::I2CPort::WIRE1 ? Wire1 : Wire);
 #else
-        rtc.begin(Wire);
+            rtc.begin(Wire);
 #endif
+            rtcInitialized = true;
+        }
 
         RTC_DateTime datetime = rtc.getDateTime();
         tm t = datetime.toUnixTime();
@@ -332,18 +337,22 @@ RTCSetResult perhapsSetRTC(RTCQuality q, const struct timeval *tv, bool forceUpd
 #elif defined(PCF8563_RTC) || defined(PCF85063_RTC)
 #if defined(PCF8563_RTC)
         if (rtc_found.address == PCF8563_RTC) {
-            SensorPCF8563 rtc;
+            static SensorPCF8563 rtc;
+            static bool rtcInitialized = false;
 #elif defined(PCF85063_RTC)
         if (rtc_found.address == PCF85063_RTC) {
-            SensorPCF85063 rtc;
+            static SensorPCF85063 rtc;
+            static bool rtcInitialized = false;
 
 #endif
-
+            if (!rtcInitialized) {
 #if WIRE_INTERFACES_COUNT == 2
-            rtc.begin(rtc_found.port == ScanI2C::I2CPort::WIRE1 ? Wire1 : Wire);
+                rtc.begin(rtc_found.port == ScanI2C::I2CPort::WIRE1 ? Wire1 : Wire);
 #else
-            rtc.begin(Wire);
+                rtc.begin(Wire);
 #endif
+                rtcInitialized = true;
+            }
             // tv_sec is a long, which is not time_t everywhere: on Windows
             // time_t is 64-bit while long is 32-bit. Copy before taking &.
             time_t setSecs = tv->tv_sec;
