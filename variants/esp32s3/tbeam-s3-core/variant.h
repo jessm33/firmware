@@ -84,6 +84,10 @@
 
 #define USE_SH1106
 
+// QMC6310 X-axis points toward the front of the board, so no heading offset is needed.
+// (The driver defaults to 180° for boards where the chip is mounted reversed.)
+#define QMC6310_HEADING_OFFSET_DEG 0.0f
+
 // QMI8658 6-DoF IMU - SPI-connected, shares HSPI bus with SD card (pins from pins_arduino.h)
 #define HAS_QMI8658
 #define QMI8658_SPI_CS IMU_CS

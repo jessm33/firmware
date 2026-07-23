@@ -9,7 +9,11 @@
 extern graphics::Screen *screen;
 #endif
 
-static constexpr float QMC6310_HEADING_OFFSET_DEG = 180.0f;
+#ifndef QMC6310_HEADING_OFFSET_DEG
+static constexpr float kHeadingOffset = 180.0f;
+#else
+static constexpr float kHeadingOffset = QMC6310_HEADING_OFFSET_DEG;
+#endif
 static constexpr int32_t QMC6310_UPDATE_INTERVAL_MS = 20;
 static constexpr uint32_t QMC6310_ACCEL_STALE_MS = 300;
 static constexpr float QMC6310_MIN_AXIS_RADIUS = 1e-4f;
@@ -85,9 +89,9 @@ int32_t QMC6310Sensor::runOnce()
             ma = FusionRemap(ma, FusionRemapAlignmentNXNYPZ);
             ga = FusionRemap(ga, FusionRemapAlignmentNXNYPZ);
         }
-        heading = FusionCompass(ga, ma, FusionConventionNed) + QMC6310_HEADING_OFFSET_DEG;
+        heading = FusionCompass(ga, ma, FusionConventionNed) + kHeadingOffset;
     } else {
-        heading = atan2f(magY, magX) * RAD_TO_DEG + QMC6310_HEADING_OFFSET_DEG;
+        heading = atan2f(magY, magX) * RAD_TO_DEG + kHeadingOffset;
     }
 
     if (heading >= 360.0f)
